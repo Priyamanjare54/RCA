@@ -1,0 +1,8 @@
+{
+  "name": "Rajendra Cricket Academy Pro",
+  "description": "A comprehensive cricket academy management platform for RCA featuring AI-powered performance analysis, attendance tracking, and match scheduling.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
