@@ -1,6 +1,7 @@
-# 🏏 Rajendra Cricket Academy (RCA) Pro
+# 🏏 Rajendra Cricket Academy (RCA)
 
 Welcome to the **Rajendra Cricket Academy (RCA) Pro** codebase. This repository is structured as a monorepo containing both the backend service and frontend application for managing the academy.
+<img width="1853" height="957" alt="Screenshot from 2026-07-04 18-43-00" src="https://github.com/user-attachments/assets/12b3ee33-aef0-44bb-9bad-82a49659923f" />
 
 ---
 
