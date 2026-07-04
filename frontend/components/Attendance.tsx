@@ -1,24 +1,22 @@
-
 import React, { useState } from 'react';
-import { Student, AttendanceRecord } from '../types';
+import { Student, AttendanceRecord, User } from '../types';
 import { api } from '../services/api';
 
 interface AttendanceProps {
   students: Student[];
   attendance: AttendanceRecord[];
   setAttendance: (records: AttendanceRecord[]) => void;
+  user: User;
 }
 
-const Attendance: React.FC<AttendanceProps> = ({ students, attendance, setAttendance }) => {
+const Attendance: React.FC<AttendanceProps> = ({ students, attendance, setAttendance, user }) => {
   const today = new Date().toISOString().split('T')[0];
   const [currentDate, setCurrentDate] = useState(today);
-  const [markedIds, setMarkedIds] = useState<string[]>(
-  students.map(s => s.id)
-);
-
+  const [markedIds, setMarkedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleToggle = (id: string) => {
+    if (user.role === 'Student') return;
     setMarkedIds(prev => 
       prev.includes(id) ? prev.filter(mid => mid !== id) : [...prev, id]
     );
@@ -30,83 +28,80 @@ const Attendance: React.FC<AttendanceProps> = ({ students, attendance, setAttend
       await api.saveAttendance(currentDate, markedIds);
       const newRecord: AttendanceRecord = { date: currentDate, presentIds: markedIds };
       setAttendance([...attendance.filter(r => r.date !== currentDate), newRecord]);
-      alert("Attendance synced to RCA Cloud for " + currentDate);
-    } catch (err) {
-  alert("Failed to save attendance. Please retry.");
-}
- finally {
+      alert("Attendance synced successfully for " + currentDate);
+    } catch (err: any) {
+      alert(err.message || "Failed to save attendance.");
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-slate-100 p-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b pb-6">
+    <div className="bg-white rounded-[32px] shadow-xl border border-slate-100 p-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b pb-8">
         <div>
-          <h3 className="text-2xl font-bold text-[#252968] heading-font uppercase">Roll Call</h3>
-          <p className="text-sm text-slate-500">Log attendance for today's session at Rajendra Cricket Academy</p>
+          <h3 className="text-3xl font-black text-[#252968] heading-font uppercase tracking-tighter italic">Roll Call</h3>
+          <p className="text-sm text-slate-500 font-medium">Daily attendance tracking for Rajendra Cricket Academy</p>
         </div>
-        <div className="flex items-center space-x-4">
-          <div>
-  <h3 className="text-2xl font-bold text-[#252968] heading-font uppercase">
-    Today’s Attendance
-  </h3>
-  <p className="text-sm text-slate-500">
-    {new Date().toDateString()} • Rajendra Cricket Academy
-  </p>
-</div>
-
-          <button 
-            onClick={handleSave}
-            disabled={loading}
-            className="bg-[#252968] text-[#f2ad3f] px-8 py-2 rounded-lg font-black hover:bg-[#1a1d4a] transition-all shadow-md text-sm uppercase tracking-widest border border-[#f2ad3f]/30 flex items-center space-x-2"
-          >
-            {loading ? <div className="w-4 h-4 border-2 border-[#f2ad3f] border-t-transparent animate-spin rounded-full"></div> : null}
-            <span>{loading ? 'Saving...' : 'Save Attendance'}</span>
-          </button>
+        <div className="flex items-center space-x-6">
+          <input 
+            type="date" 
+            value={currentDate} 
+            onChange={e => setCurrentDate(e.target.value)}
+            className="border-2 border-slate-100 rounded-2xl p-3 font-bold outline-none focus:border-[#252968] bg-slate-50 text-xs"
+          />
+          {user.role !== 'Student' && (
+            <button 
+              onClick={handleSave}
+              disabled={loading}
+              className="bg-[#252968] text-[#f2ad3f] px-10 py-3 rounded-2xl font-black hover:bg-[#1a1d4a] transition-all shadow-xl text-xs uppercase tracking-widest flex items-center space-x-3"
+            >
+              {loading ? <div className="w-4 h-4 border-2 border-[#f2ad3f] border-t-transparent animate-spin rounded-full"></div> : null}
+              <span>Sync Cloud</span>
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-hidden rounded-[32px] border border-slate-100">
         <table className="w-full text-left">
           <thead>
-            <tr className="bg-slate-50 text-[#252968] text-xs font-black uppercase tracking-widest">
-              <th className="py-4 px-6 rounded-tl-lg">Student Profile</th>
-              <th className="py-4 px-6">Field Category</th>
-              <th className="py-4 px-6 text-center rounded-tr-lg">Presence</th>
+            <tr className="bg-slate-50 text-[#252968] text-[10px] font-black uppercase tracking-widest">
+              <th className="p-8">Athlete Profile</th>
+              <th className="p-8">Category</th>
+              <th className="p-8 text-center">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {students.map((student) => (
-              <tr key={student.id} className="hover:bg-blue-50/30 transition-colors group">
-                <td className="py-5 px-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-[#252968] text-[#f2ad3f] rounded-full flex items-center justify-center font-black text-sm border-2 border-[#f2ad3f]/20 shadow-sm">
+              <tr key={student.id} className="hover:bg-blue-50/30 transition-colors">
+                <td className="p-8">
+                  <div className="flex items-center space-x-5">
+                    <div className="w-12 h-12 bg-[#252968] text-[#f2ad3f] rounded-2xl flex items-center justify-center font-black text-lg border-2 border-[#f2ad3f]/20 shadow-lg">
                       {student.name.charAt(0)}
                     </div>
                     <div>
-                        <span className="block font-bold text-slate-800">{student.name}</span>
-                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">ID: RCA-{student.id.padStart(3, '0')}</span>
+                      <span className="block font-black text-slate-800 uppercase italic">{student.name}</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase">ID: RCA-{student.id.padStart(3, '0')}</span>
                     </div>
                   </div>
                 </td>
-                <td className="py-5 px-6">
-                  <span className="text-[10px] px-3 py-1 rounded-full font-black uppercase bg-slate-100 text-slate-600 border border-slate-200">
+                <td className="p-8">
+                  <span className="px-4 py-1.5 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase border border-slate-200">
                     {student.category}
                   </span>
                 </td>
-                <td className="py-5 px-6 text-center">
+                <td className="p-8 text-center">
                   <button
                     onClick={() => handleToggle(student.id)}
-                    className={`min-w-[100px] px-4 py-2 rounded-lg text-xs font-black transition-all transform active:scale-95 ${
+                    disabled={user.role === 'Student'}
+                    className={`min-w-[120px] py-3 rounded-xl text-[10px] font-black tracking-widest transition-all ${
                       markedIds.includes(student.id)
-  ? 'bg-green-600 text-white'
-  : 'bg-red-100 text-red-700'
-
+                        ? 'bg-green-600 text-white shadow-lg shadow-green-200'
+                        : 'bg-red-50 text-red-600 border border-red-100'
                     }`}
                   >
-                    {markedIds.includes(student.id) ? 'PRESENT' : 'ABSENT'}
-
+                    {markedIds.includes(student.id) ? '✓ PRESENT' : '✗ ABSENT'}
                   </button>
                 </td>
               </tr>

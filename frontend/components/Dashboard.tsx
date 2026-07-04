@@ -40,7 +40,7 @@ const Dashboard: React.FC<DashboardProps> = ({ students, matches, quote }) => {
           <h2 className="text-5xl font-bold heading-font mb-8 italic leading-none tracking-tighter uppercase">" {quote} "</h2>
           <p className="text-blue-100 mb-10 font-medium text-xl max-w-xl border-l-4 border-[#f2ad3f] pl-6 italic">Every session at Rajendra Cricket Academy is a step toward greatness. Own the field today, dominate the world tomorrow.</p>
           <div className="flex space-x-4">
-             <button className="bg-[#f2ad3f] text-[#252968] px-10 py-4 rounded-full font-black hover:bg-yellow-500 transition-all shadow-xl uppercase tracking-widest text-xs transform hover:scale-105 active:scale-95 border border-[#252968]/20">
+             <button onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'students' }))} className="bg-[#f2ad3f] text-[#252968] px-10 py-4 rounded-full font-black hover:bg-yellow-500 transition-all shadow-xl uppercase tracking-widest text-xs transform hover:scale-105 active:scale-95 border border-[#252968]/20">
               Access RCA Playbook
             </button>
           </div>
@@ -99,7 +99,7 @@ const Dashboard: React.FC<DashboardProps> = ({ students, matches, quote }) => {
                 <h3 className="font-black text-[#252968] heading-font uppercase tracking-widest">Active Match Fixtures</h3>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Real-time Academy Schedule</p>
             </div>
-            <button className="text-[#f2ad3f] text-[10px] font-black uppercase tracking-widest hover:underline border-2 border-[#f2ad3f]/30 px-4 py-2 rounded-full">Academy Calendar</button>
+            <button onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'matches' }))} className="text-[#f2ad3f] text-[10px] font-black uppercase tracking-widest hover:underline border-2 border-[#f2ad3f]/30 px-4 py-2 rounded-full">Academy Calendar</button>
           </div>
           <div className="divide-y divide-slate-50">
             {matches.slice(0, 4).map((match) => (

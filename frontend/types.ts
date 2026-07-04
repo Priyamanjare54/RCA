@@ -10,13 +10,15 @@ export interface User {
   id: string;
   username: string;
   name: string;
-  role: 'Coach' | 'Admin';
+  role: 'Coach' | 'Admin' | 'Student';
+  studentProfileId?: string;
 }
 
 export interface Student {
   id: string;
   name: string;
   age: number;
+  contact?: string;
   category: StudentCategory;
   joinDate: string;
   batchId?: string;

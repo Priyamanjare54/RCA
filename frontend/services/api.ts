@@ -82,6 +82,7 @@ export const api = {
   // Attendance
   saveAttendance: (date: string, presentIds: string[]) => 
     request('/attendance', { method: 'POST', body: JSON.stringify({ date, presentIds }) }),
+  getAttendance: () => request('/attendance'),
   
   // Performance & Fitness
   savePerformance: (data: any) => request('/performance', { method: 'POST', body: JSON.stringify(data) }),

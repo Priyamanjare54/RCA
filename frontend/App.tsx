@@ -28,7 +28,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
     setDailyQuote(randomQuote);
-    
+
     // Restore Session
     const savedUser = localStorage.getItem('rca_user');
     const savedToken = localStorage.getItem('rca_token');
@@ -36,6 +36,23 @@ const App: React.FC = () => {
       setUser(JSON.parse(savedUser));
       initData();
     }
+
+    const handleNavigate = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const targetView = customEvent.detail;
+      const viewMap: Record<string, View> = {
+        'attendance': 'Attendance',
+        'performance': 'Performance',
+        'students': 'Students',
+        'matches': 'Schedule'
+      };
+      if (viewMap[targetView]) {
+        setActiveView(viewMap[targetView]);
+      }
+    };
+
+    window.addEventListener('navigate', handleNavigate);
+    return () => window.removeEventListener('navigate', handleNavigate);
   }, []);
 
   const initData = async () => {
@@ -72,20 +89,20 @@ const App: React.FC = () => {
 
   const renderView = () => {
     // Role-based view protection
-    const isRestricted = (v: View) => (v === 'Staff' || v === 'Students') && user.role !== 'Admin';
+    const isRestricted = (v: View) => v === 'Staff' && user.role !== 'Admin';
     if (isRestricted(activeView)) {
       return <Dashboard students={students} matches={matches} quote={dailyQuote} />;
     }
 
     switch (activeView) {
       case 'Dashboard': return <Dashboard students={students} matches={matches} quote={dailyQuote} />;
-      case 'Attendance': return <Attendance students={students} attendance={attendance} setAttendance={setAttendance} />;
-      case 'Performance': return <Performance students={students} />;
+      case 'Attendance': return <Attendance students={students} attendance={attendance} setAttendance={setAttendance} user={user} />;
+      case 'Performance': return <Performance students={students} user={user} />;
       case 'Schedule': return <Schedule matches={matches} setMatches={setMatches} user={user} />;
       case 'VideoAI': return <VideoAnalysis />;
       case 'Chat': return <Chatbot />;
       case 'Staff': return <StaffManagement />;
-      case 'Students': return <StudentManagement onStudentsUpdate={initData} />;
+      case 'Students': return <StudentManagement onStudentsUpdate={initData} user={user} />;
       default: return <Dashboard students={students} matches={matches} quote={dailyQuote} />;
     }
   };
@@ -93,7 +110,7 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       <Sidebar activeView={activeView} setActiveView={setActiveView} user={user} onLogout={handleLogout} />
-      
+
       <main className="flex-1 flex flex-col overflow-hidden">
         <header className="h-20 bg-white border-b flex items-center justify-between px-10 z-10 shadow-sm">
           <div className="flex items-center space-x-6">

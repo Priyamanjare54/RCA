@@ -30,8 +30,10 @@ const StaffManagement: React.FC = () => {
         api.getUsers(),
         api.getBatches()
       ]);
-      setStaff(staffData);
-      setBatches(batchData);
+      console.log('STAFF DATA:', staffData);
+      console.log('BATCH DATA:', batchData);
+      setStaff(Array.isArray(staffData) ? staffData : (staffData as any).data || []);
+      setBatches(Array.isArray(batchData) ? batchData : (batchData as any).data || []);
     } catch (err) {
       console.error('Failed to load RCA personnel data');
     } finally {
@@ -53,8 +55,8 @@ const StaffManagement: React.FC = () => {
       setEditingBatch(null);
       setBatchForm({ name: '', coachId: '', schedule: '', level: 'Intermediate' });
       fetchData();
-    } catch (err) {
-      alert('Operation failed. Check administrative permissions.');
+    } catch (err: any) {
+      alert(err.message || 'Operation failed. Check administrative permissions.');
     }
   };
 
@@ -74,8 +76,8 @@ const StaffManagement: React.FC = () => {
     try {
       await api.deleteBatch(id);
       fetchData();
-    } catch (err) {
-      alert('Deletion failed');
+    } catch (err: any) {
+      alert(err.message || 'Deletion failed');
     }
   };
 
@@ -120,10 +122,10 @@ const StaffManagement: React.FC = () => {
                   <td className="py-6 px-8">
                     <div className="flex items-center space-x-4">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm border ${u.role === 'Admin' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>
-                        {u.name.charAt(0)}
+                        {(u.name || u.username || '?').charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-bold text-slate-800">{u.name}</p>
+                        <p className="font-bold text-slate-800">{u.name || 'Unknown'}</p>
                         <p className="text-[10px] text-slate-400 font-medium lowercase">@{u.username}</p>
                       </div>
                     </div>

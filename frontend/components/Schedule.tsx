@@ -23,10 +23,10 @@ const Schedule: React.FC<ScheduleProps> = ({ matches, setMatches, user }) => {
     status: 'Scheduled'
   });
 
-  const isAdmin = user.role === 'Admin';
+  const canEdit = user.role === 'Admin' || user.role === 'Coach';
 
   const handleSave = async () => {
-    if (!isAdmin) return;
+    if (!canEdit) return;
     if (!formData.opponent || !formData.date) return;
     setLoading(true);
     try {
@@ -41,8 +41,8 @@ const Schedule: React.FC<ScheduleProps> = ({ matches, setMatches, user }) => {
       setEditingMatch(null);
       setFormData({ opponent: '', date: '', time: '', venue: '', format: 'T20', status: 'Scheduled' });
       alert('Match Protocol Finalized.');
-    } catch (err) {
-      alert('Protocol sync failed.');
+    } catch (err: any) {
+      alert(err.message || 'Protocol sync failed.');
     } finally {
       setLoading(false);
     }
@@ -53,8 +53,8 @@ const Schedule: React.FC<ScheduleProps> = ({ matches, setMatches, user }) => {
     try {
         await api.deleteMatch(id);
         setMatches(matches.filter(m => m.id !== id));
-    } catch (e) {
-        alert("Operation failed.");
+    } catch (e: any) {
+        alert(e.message || "Operation failed.");
     }
   };
 
@@ -74,7 +74,7 @@ const Schedule: React.FC<ScheduleProps> = ({ matches, setMatches, user }) => {
 
           <p className="text-sm text-slate-500 font-medium">Official RCA Inter-Academy Tournament & Elite Match Schedule</p>
         </div>
-        {isAdmin && (
+        {canEdit && (
           <button 
             onClick={() => { setEditingMatch(null); setShowModal(true); }}
             className="bg-[#252968] text-[#f2ad3f] px-10 py-4 rounded-full font-black hover:bg-[#1a1d4a] transition-all shadow-2xl active:scale-95 uppercase text-xs tracking-widest border-2 border-[#f2ad3f]/30"
@@ -108,7 +108,7 @@ const Schedule: React.FC<ScheduleProps> = ({ matches, setMatches, user }) => {
                 </div>
               </div>
               
-              {isAdmin && (
+              {canEdit && (
                 <div className="flex space-x-3 pt-4 border-t border-slate-100">
                     <button onClick={() => openEdit(match)} className="flex-1 bg-slate-100 text-slate-600 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-[#252968] hover:text-[#f2ad3f] transition-all">Edit</button>
                     <button onClick={() => handleDelete(match.id)} className="flex-1 bg-red-50 text-red-600 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-600 hover:text-white transition-all">Delete</button>

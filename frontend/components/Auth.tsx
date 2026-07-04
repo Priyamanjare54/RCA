@@ -11,13 +11,15 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   // Pre-filled with requested credentials for easier testing
   const [formData, setFormData] = useState({
-    username: 'Aditya',
-    password: 'Aditya',
-    name: 'Aditya',
-    role: 'Admin'
+    username: 'Aryan',
+    password: 'Aryan',
+    name: 'Aryan',
+    role: 'Admin',
+    age: '',
+    contact: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,49 +69,75 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
             <>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-[#f2ad3f] uppercase tracking-widest ml-1">Full Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   className="w-full bg-white/5 border-2 border-white/10 rounded-2xl p-4 text-white font-bold outline-none focus:border-[#f2ad3f] transition-all"
                   value={formData.name}
-                  onChange={e => setFormData({...formData, name: e.target.value})}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-[#f2ad3f] uppercase tracking-widest ml-1">Academy Role</label>
-                <select 
+                <select
                   className="w-full bg-[#1a1d4a] border-2 border-white/10 rounded-2xl p-4 text-white font-bold outline-none focus:border-[#f2ad3f] transition-all"
                   value={formData.role}
-                  onChange={e => setFormData({...formData, role: e.target.value})}
+                  onChange={e => setFormData({ ...formData, role: e.target.value })}
                 >
                   <option value="Coach">Coach</option>
                   <option value="Admin">Administrator</option>
+                  <option value="Student">Student Athlete</option>
                 </select>
               </div>
+              {formData.role === 'Student' && (
+                <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-[#f2ad3f] uppercase tracking-widest ml-1">Age</label>
+                    <input
+                      type="number"
+                      required
+                      className="w-full bg-white/5 border-2 border-white/10 rounded-2xl p-4 text-white font-bold outline-none focus:border-[#f2ad3f] transition-all"
+                      value={formData.age}
+                      onChange={e => setFormData({ ...formData, age: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-[#f2ad3f] uppercase tracking-widest ml-1">Contact</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full bg-white/5 border-2 border-white/10 rounded-2xl p-4 text-white font-bold outline-none focus:border-[#f2ad3f] transition-all"
+                      value={formData.contact}
+                      onChange={e => setFormData({ ...formData, contact: e.target.value })}
+                      placeholder="9988..."
+                    />
+                  </div>
+                </div>
+              )}
             </>
           )}
           <div className="space-y-2">
             <label className="text-[10px] font-black text-[#f2ad3f] uppercase tracking-widest ml-1">Username</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               required
               className="w-full bg-white/5 border-2 border-white/10 rounded-2xl p-4 text-white font-bold outline-none focus:border-[#f2ad3f] transition-all"
               value={formData.username}
-              onChange={e => setFormData({...formData, username: e.target.value})}
+              onChange={e => setFormData({ ...formData, username: e.target.value })}
             />
           </div>
           <div className="space-y-2">
             <label className="text-[10px] font-black text-[#f2ad3f] uppercase tracking-widest ml-1">Password</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               required
               className="w-full bg-white/5 border-2 border-white/10 rounded-2xl p-4 text-white font-bold outline-none focus:border-[#f2ad3f] transition-all"
               value={formData.password}
-              onChange={e => setFormData({...formData, password: e.target.value})}
+              onChange={e => setFormData({ ...formData, password: e.target.value })}
             />
           </div>
 
-          <button 
+          <button
             type="submit"
             disabled={loading}
             className="w-full bg-[#f2ad3f] text-[#252968] py-5 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl hover:bg-yellow-500 active:scale-95 transition-all mt-4 flex items-center justify-center space-x-2"
@@ -120,7 +148,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
         </form>
 
         <div className="mt-8 text-center">
-          <button 
+          <button
             onClick={() => setIsLogin(!isLogin)}
             className="text-blue-200 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors"
           >

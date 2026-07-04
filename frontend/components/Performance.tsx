@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Student } from '../types';
+import { Student, User } from '../types';
 import { analyzePerformanceHistory } from '../services/gemini';
 import { api } from '../services/api';
 
 interface PerformanceProps {
   students: Student[];
+  user: User;
 }
 
 type TabType = 'skills' | 'fitness' | 'fitnessHistory';
@@ -90,9 +91,10 @@ const TrendBar = ({
 
 
 /* ================== MAIN ================== */
-const Performance: React.FC<PerformanceProps> = ({ students }) => {
+const Performance: React.FC<PerformanceProps> = ({ students, user }) => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [activeTab, setActiveTab] = useState<TabType>('skills');
+  const canEdit = user.role !== 'Student';
+  const [activeTab, setActiveTab] = useState<TabType>(canEdit ? 'skills' : 'fitnessHistory');
   const [history, setHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -263,7 +265,7 @@ const Performance: React.FC<PerformanceProps> = ({ students }) => {
 
               {/* TABS */}
               <div className="flex mb-6 bg-slate-100 rounded-xl p-1">
-                {['skills', 'fitness', 'fitnessHistory'].map(t => (
+                {['skills', 'fitness', 'fitnessHistory'].filter(t => canEdit || t === 'fitnessHistory').map(t => (
                   <button
                     key={t}
                     onClick={() => setActiveTab(t as TabType)}
@@ -273,7 +275,7 @@ const Performance: React.FC<PerformanceProps> = ({ students }) => {
                         : 'text-slate-400'
                     }`}
                   >
-                    {t}
+                    {t === 'skills' ? 'Add Skills' : t === 'fitness' ? 'Add Fitness' : 'View History'}
                   </button>
                 ))}
               </div>
